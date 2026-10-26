@@ -23,8 +23,27 @@ dependencies = [
     "pytest>=7.4.0",
 ]
 
+[tool.setuptools]
+package-dir = {"aegistwin" = "."}
+packages = [
+    "aegistwin",
+    "aegistwin.app",
+    "aegistwin.compliance",
+    "aegistwin.config",
+    "aegistwin.data",
+    "aegistwin.evaluation",
+    "aegistwin.llm_brief",
+    "aegistwin.models",
+    "aegistwin.monitoring",
+    "aegistwin.safety",
+    "aegistwin.serving",
+    "aegistwin.triage",
+    "aegistwin.twin",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 pythonpath = ["..", "."]
+
 
