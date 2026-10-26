@@ -33,6 +33,8 @@ coverage/
 .env
 .env*.local
 *.env
+!.env.example
+!*/.env.example
 
 # TypeScript build info
 *.tsbuildinfo
