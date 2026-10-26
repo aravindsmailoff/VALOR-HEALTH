@@ -2,7 +2,7 @@
 
 import copy
 from datetime import date, datetime, timedelta
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 from pydantic import BaseModel, Field
 
 from aegistwin.data.schemas import (
