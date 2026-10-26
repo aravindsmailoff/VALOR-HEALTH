@@ -7,7 +7,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT.parent))
 sys.path.insert(0, str(REPO_ROOT))
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, APIRouter
 from pydantic import BaseModel, Field
 from aegistwin.config.settings import settings
 from aegistwin.data.schemas import (
@@ -28,6 +28,8 @@ app = FastAPI(
     description="Stateful Member Digital Twin, Multi-Outcome Predictive Risk Stratification & Clinical Decision Support",
     version="1.0.0"
 )
+
+router = APIRouter()
 
 # Global in-memory storage for active twins
 TWIN_REGISTRY: Dict[str, MemberDigitalTwin] = {}
@@ -62,7 +64,7 @@ class OverrideRequest(BaseModel):
     override_reason: str
     notes: str
 
-@app.get("/health")
+@router.get("/health")
 def health_check():
     return {
         "status": "HEALTHY",
@@ -71,7 +73,7 @@ def health_check():
         "timestamp": datetime.now().isoformat()
     }
 
-@app.get("/v1/twin/{patient_id}")
+@router.get("/v1/twin/{patient_id}")
 def get_member_twin(patient_id: str, actor_id: str = "PORTAL_USER", actor_role: str = "CARE_MANAGER"):
     audit_logger.log(actor_id=actor_id, role=actor_role, patient_id=patient_id, action="VIEW_TWIN")
     if patient_id not in TWIN_REGISTRY:
@@ -87,7 +89,7 @@ def get_member_twin(patient_id: str, actor_id: str = "PORTAL_USER", actor_role: 
         "latest_hba1c": twin.get_latest_lab("4548-4")
     }
 
-@app.post("/v1/events/score", response_model=EventScoringResponse)
+@router.post("/v1/events/score", response_model=EventScoringResponse)
 def score_realtime_event(req: RealTimeEventRequest):
     audit_logger.log(actor_id=req.actor_id, role=req.actor_role, patient_id=req.patient_id, action="SCORE_EVENT")
     if req.patient_id not in TWIN_REGISTRY:
@@ -137,7 +139,7 @@ def score_realtime_event(req: RealTimeEventRequest):
         clinical_reason_code=clinical_code
     )
 
-@app.post("/v1/simulations/run", response_model=SimulationResult)
+@router.post("/v1/simulations/run", response_model=SimulationResult)
 def run_simulation(
     patient_id: str,
     intervention: SimulationIntervention,
@@ -151,7 +153,7 @@ def run_simulation(
     res = simulator.simulate(twin, intervention)
     return res
 
-@app.post("/v1/triage/override")
+@router.post("/v1/triage/override")
 def record_clinician_override(req: OverrideRequest):
     audit_logger.log(
         actor_id=req.clinician_id,
@@ -169,3 +171,7 @@ def record_clinician_override(req: OverrideRequest):
         notes=req.notes
     )
     return {"status": "SUCCESS", "override_record": rec.model_dump()}
+
+# Register routes for both root and /api path prefix
+app.include_router(router)
+app.include_router(router, prefix="/api")
