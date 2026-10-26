@@ -1,0 +1,197 @@
+{
+  "timestamp": "2026-10-26T22:58:06.635373",
+  "runtime_seconds": 13.81,
+  "cohort_size": 1500,
+  "metrics_90d_acute": {
+    "auroc": 0.6414,
+    "auprc": 0.0478,
+    "brier_score": 0.0344,
+    "expected_calibration_error": 0.0283,
+    "precision_at_1pct": 0.0,
+    "lift_at_1pct": 0.0,
+    "precision_at_5pct": 0.15,
+    "lift_at_5pct": 4.62,
+    "precision_at_10pct": 0.1,
+    "lift_at_10pct": 3.08,
+    "calibration_curve": [
+      {
+        "bin": "0-10%",
+        "predicted_mean": 0.0446,
+        "observed_rate": 0.0253,
+        "sample_count": 316
+      },
+      {
+        "bin": "10-20%",
+        "predicted_mean": 0.1111,
+        "observed_rate": 0.0602,
+        "sample_count": 83
+      },
+      {
+        "bin": "20-30%",
+        "predicted_mean": 0.25,
+        "observed_rate": 0.0,
+        "sample_count": 0
+      },
+      {
+        "bin": "30-40%",
+        "predicted_mean": 0.35,
+        "observed_rate": 0.0,
+        "sample_count": 0
+      },
+      {
+        "bin": "40-50%",
+        "predicted_mean": 0.45,
+        "observed_rate": 0.0,
+        "sample_count": 0
+      },
+      {
+        "bin": "50-60%",
+        "predicted_mean": 0.55,
+        "observed_rate": 0.0,
+        "sample_count": 0
+      },
+      {
+        "bin": "60-70%",
+        "predicted_mean": 0.65,
+        "observed_rate": 0.0,
+        "sample_count": 0
+      },
+      {
+        "bin": "70-80%",
+        "predicted_mean": 0.75,
+        "observed_rate": 0.0,
+        "sample_count": 0
+      },
+      {
+        "bin": "80-90%",
+        "predicted_mean": 0.85,
+        "observed_rate": 0.0,
+        "sample_count": 0
+      },
+      {
+        "bin": "90-100%",
+        "predicted_mean": 0.98,
+        "observed_rate": 0.0,
+        "sample_count": 1
+      }
+    ],
+    "decision_curve": [
+      {
+        "threshold": 0.05,
+        "net_benefit_model": -0.008,
+        "net_benefit_all": -0.0184,
+        "net_benefit_none": 0.0
+      },
+      {
+        "threshold": 0.1,
+        "net_benefit_model": -0.0094,
+        "net_benefit_all": -0.075,
+        "net_benefit_none": 0.0
+      },
+      {
+        "threshold": 0.15,
+        "net_benefit_model": -0.0004,
+        "net_benefit_all": -0.1382,
+        "net_benefit_none": 0.0
+      },
+      {
+        "threshold": 0.2,
+        "net_benefit_model": -0.0006,
+        "net_benefit_all": -0.2094,
+        "net_benefit_none": 0.0
+      },
+      {
+        "threshold": 0.25,
+        "net_benefit_model": -0.0008,
+        "net_benefit_all": -0.29,
+        "net_benefit_none": 0.0
+      },
+      {
+        "threshold": 0.3,
+        "net_benefit_model": -0.0011,
+        "net_benefit_all": -0.3821,
+        "net_benefit_none": 0.0
+      },
+      {
+        "threshold": 0.35,
+        "net_benefit_model": -0.0013,
+        "net_benefit_all": -0.4885,
+        "net_benefit_none": 0.0
+      },
+      {
+        "threshold": 0.4,
+        "net_benefit_model": -0.0017,
+        "net_benefit_all": -0.6125,
+        "net_benefit_none": 0.0
+      },
+      {
+        "threshold": 0.45,
+        "net_benefit_model": -0.002,
+        "net_benefit_all": -0.7591,
+        "net_benefit_none": 0.0
+      },
+      {
+        "threshold": 0.5,
+        "net_benefit_model": -0.0025,
+        "net_benefit_all": -0.935,
+        "net_benefit_none": 0.0
+      }
+    ]
+  },
+  "golden_safety_eval": {
+    "total_test_cases": 520,
+    "critical_cases_evaluated": 450,
+    "critical_cases_detected": 450,
+    "critical_sensitivity_pct": 100.0,
+    "false_positive_count": 0,
+    "golden_eval_passed_100pct": true,
+    "failures": []
+  },
+  "perturbation_stability": {
+    "max_observed_probability_shift": 0.0207,
+    "max_allowed_delta": 0.015,
+    "perturbation_stability_passed": false
+  },
+  "drift_baseline": {
+    "status": "STABLE",
+    "prediction_score_psi": 0.0191,
+    "needs_model_retraining": false,
+    "flagged_features_count": 0,
+    "flagged_features": [],
+    "feature_psis": {
+      "age": 0.0024,
+      "is_female": 0.0,
+      "is_black": 0.0,
+      "is_hispanic": 0.0,
+      "is_asian": 0.0,
+      "area_deprivation_index": 0.0,
+      "social_vulnerability_index": 0.0,
+      "housing_unstable": 0.0,
+      "food_insecure": 0.0,
+      "distance_to_primary_care_miles": 0.0,
+      "ed_visits_90d": 0.0,
+      "inpatient_visits_365d": 0.0,
+      "outpatient_visits_365d": 0.0,
+      "total_claims_cost_365d": 0.0,
+      "charlson_comorbidity_index": 0.0,
+      "has_chf": 0.0,
+      "has_diabetes": 0.0,
+      "has_renal_disease": 0.0,
+      "has_copd_asthma": 0.0,
+      "has_depression": 0.0,
+      "active_medication_count": 0.0,
+      "polypharmacy_flag": 0.0,
+      "avg_rolling_pdc_90d": 0.0,
+      "non_adherence_flag": 0.0,
+      "latest_egfr": 0.0216,
+      "egfr_slope_90d": 0.0077,
+      "latest_hba1c": 0.0009,
+      "latest_potassium": 0.0409,
+      "wearable_mean_daily_steps": 0.0,
+      "wearable_mean_resting_hr": 0.0,
+      "wearable_step_drop_pct": 0.0,
+      "active_critical_safety_alert_count": 0.0,
+      "care_management_enrolled": 0.0
+    }
+  }
+}

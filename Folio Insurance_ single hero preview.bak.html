@@ -1,0 +1,1429 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Orrery — Observatory & Astronomical Society</title>
+<meta name="description" content="Watching the same sky from the same hill since 1841. Public nights every clear Friday.">
+<meta name="theme-color" content="#05060b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2305060b'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' text-anchor='middle' fill='%23ffcf7a'%3EO%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://api.fontshare.com">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=amulya@400,500,700&f[]=supreme@400,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* ── engine.css ────────────────────────────────────────────────────────────
+ * The shared plumbing behind the editorial wave. It owns the reset, the
+ * adaptive rem grid, the reveal primitives' RESTING state, and the loader.
+ * It owns NO colour, NO type family and NO layout — those are per site, and
+ * a shared stylesheet that decided them is how ten sites become one site.
+ * ------------------------------------------------------------------------ */
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+img, video, svg, canvas { display: block; max-width: 100%; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+
+/* ── the adaptive rem grid ─────────────────────────────────────────────────
+ * Every dimension in these sites is authored in rem against a 1920 design
+ * width, and the root size is recomputed from the viewport. Scaling DOWN is
+ * four media queries; scaling UP past 1920 is four lines of JS. Authoring in
+ * px and adding breakpoints later is the same work spread over forty rules.
+ * The 640 stop jumps to a 360 base on purpose — a phone is not a small
+ * desktop, and 0.833vw at 390px would set body copy at 5px. */
+html { font-size: 16px; }
+@media (max-width: 1920px) { html { font-size: 0.833333vw; } }
+@media (max-width: 1440px) { html { font-size: 1.111111vw; } }
+@media (max-width: 1024px) { html { font-size: 1.5625vw;  } }
+@media (max-width:  640px) { html { font-size: 4.444444vw; } }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: auto; }
+body { min-height: 100vh; overflow-x: clip; -webkit-font-smoothing: antialiased;
+       text-rendering: optimizeLegibility; }
+/* The lock the loader / menu / modal take out. `overflow:hidden` alone does
+ * not hold iOS, and `position:fixed` alone loses the scroll offset. */
+html.is-locked, html.is-locked body { overflow: hidden; height: 100%; position: relative; }
+
+:focus-visible { outline: 2px solid var(--focus, currentColor); outline-offset: 2px; }
+::selection { background: var(--sel-bg, currentColor); color: var(--sel-fg, #fff); }
+
+.sr { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden;
+      clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* ── reveal primitives — RESTING state only ────────────────────────────────
+ * Everything below is what the element looks like before the engine has
+ * touched it. The engine writes the transform; CSS must never also animate
+ * the same property or the two fight and the element jitters at the seam. */
+
+/* Clip-mask line / word reveal. The clip box is what makes the glyph rise out
+ * of nothing rather than fade in place, and the padding is what stops it from
+ * eating the descenders — a clip box tight to the em box cuts every g and y. */
+.rv-clip { display: block; overflow: hidden; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+.rv-clip > i { display: block; font-style: inherit; will-change: transform, opacity;
+               transform: translateY(115%); opacity: 0; }
+.rv-w { display: inline-block; overflow: hidden; padding-bottom: 0.12em;
+        margin-bottom: -0.12em; vertical-align: bottom; }
+.rv-w > i { display: inline-block; font-style: inherit; will-change: transform, opacity;
+            transform: translateY(115%); opacity: 0; }
+/* A no-JS / reduced-motion fallback: whatever else happens, the words are
+ * readable. A reveal engine that fails closed hides the entire page. */
+.no-js .rv-clip > i, .no-js .rv-w > i { transform: none; opacity: 1; }
+
+[data-rv] { will-change: transform, opacity; }
+[data-rv="rise"]  { opacity: 0; transform: translateY(1.75rem); }
+[data-rv="rise-s"]{ opacity: 0; transform: translateY(1rem); }
+[data-rv="rise-l"]{ opacity: 0; transform: translateY(3rem); }
+[data-rv="pop"]   { opacity: 0; transform: scale(0.9); }
+[data-rv="wipe"]  { clip-path: inset(0 0 100% 0); }
+[data-rv="grow"]  { transform: scaleX(0); transform-origin: left; }
+.rv-in { opacity: 1 !important; }
+
+/* ── the loader ────────────────────────────────────────────────────────────
+ * A curtain, not an opacity fade on <body>: a body that fades in shows the
+ * page's own layout shifting behind it. This slides off the top and is gone. */
+.ldr { position: fixed; inset: 0; z-index: 200; display: grid; place-content: center;
+       justify-items: center; gap: 2rem; will-change: transform; }
+.ldr-track { width: 10rem; height: 1px; border-radius: 62.5rem; overflow: hidden;
+             background: currentColor; opacity: 0.25; }
+.ldr-track > i { display: block; height: 100%; background: currentColor; opacity: 1;
+                 transform: scaleX(0); transform-origin: left; }
+.ldr-num { font-variant-numeric: tabular-nums; }
+
+/* ── shared shapes the sites compose with ──────────────────────────────────*/
+.wrap { width: 100%; }
+.marq { display: flex; overflow: hidden; white-space: nowrap; }
+.marq > div { display: flex; flex: none; will-change: transform; }
+.drag { cursor: grab; touch-action: pan-y; }
+.drag.is-drag { cursor: grabbing; }
+.drag > * { user-select: none; }
+.pin { position: sticky; top: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rv-clip > i, .rv-w > i { transform: none !important; opacity: 1 !important; }
+  [data-rv] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+}
+
+
+/* ── ORRERY ────────────────────────────────────────────────────────────────
+ * A CENTRED almanac on black. LODESTONE is the other WebGL-ground build in
+ * this wave and it is left-aligned with bordered panels; this one is a
+ * single narrow column with no panels at all, because an observatory's
+ * printed matter is a column of dates and it should read like one.
+ * The accent is the colour of a red observing torch, which is the only
+ * light anybody is allowed to carry on that hill. */
+:root{
+  --void:#05060b; --paper:#e8e6df; --amber:#ffcf7a; --torch:#e0563c;
+  --soft:#7c7a86; --line:rgba(232,230,223,.12);
+  --pad:0.75rem; --col:46rem;
+  --focus:#ffcf7a; --sel-bg:#ffcf7a; --sel-fg:#05060b;
+}
+body{ background:var(--void); color:var(--paper);
+      font-family:"Supreme",system-ui,sans-serif; font-size:0.93rem; line-height:1.66; }
+#sky{ position:fixed; inset:0; width:100%; height:100%; z-index:0; display:block;
+      cursor:grab; }
+#sky:active{ cursor:grabbing; }
+/* The vignette is a fixed layer, never a filter on the canvas: a CSS filter
+ * on a WebGL surface forces a readback of the drawing buffer every frame. */
+.vig{ position:fixed; inset:0; z-index:1; pointer-events:none;
+      background:radial-gradient(115% 80% at 50% 42%, transparent 34%, rgba(5,6,11,.55) 78%,
+                 rgba(5,6,11,.9) 100%); }
+main{ position:relative; z-index:2; padding:var(--pad); }
+.hero, .nights, .instruments, .join, .ephem{ max-width:var(--col); margin:0 auto; }
+
+h1,h2,h3,.bar-c,.foot-mark,.ldr-mark,.menu-nav a,.h2,.jn-h,.in-n{
+  font-family:"Amulya",Georgia,serif; font-weight:400; letter-spacing:-0.012em; line-height:1.06; }
+.h2{ font-size:clamp(1.9rem,4vw,3.2rem); }
+.mono,.ephem dd,.prog em,.ldr-num,.hint,.eyebrow,.prog b{
+  font-family:"JetBrains Mono",ui-monospace,monospace; }
+
+.ldr{ background:var(--void); color:var(--paper); }
+.ldr-mark{ font-family:"Amulya",Georgia,serif; font-size:1.9rem; letter-spacing:0.3em; }
+.ldr-track > i{ background:var(--amber); }
+.ldr-num{ font-size:0.66rem; letter-spacing:0.28em; opacity:.5; }
+
+.eyebrow{ display:inline-flex; align-items:center; gap:0.55rem; font-size:0.6rem;
+          text-transform:uppercase; letter-spacing:0.22em; color:var(--soft); }
+.eyebrow > i{ width:0.3rem; height:0.3rem; border-radius:62.5rem; background:var(--torch);
+              box-shadow:0 0 9px var(--torch); }
+.pill{ display:inline-flex; align-items:center; gap:0.6rem; border-radius:62.5rem;
+       padding:0.85rem 1.5rem; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.18em;
+       border:1px solid var(--amber); color:var(--amber);
+       font-family:"JetBrains Mono",monospace; transition:background .3s,color .3s; }
+.pill svg{ width:0.85rem; height:0.85rem; transition:transform .4s cubic-bezier(.2,.8,.25,1); }
+.pill:hover{ background:var(--amber); color:var(--void); }
+.pill:hover svg{ transform:translateX(5px); }
+
+/* ── bar ───────────────────────────────────────────────────────────────── */
+.bar{ display:flex; align-items:center; gap:1rem; padding:1.3rem 1rem 0;
+      font-family:"JetBrains Mono",monospace; font-size:0.64rem; text-transform:uppercase;
+      letter-spacing:0.18em; }
+@media (min-width:640px){ .bar{ padding:1.7rem 1.75rem 0; } }
+.bar-l{ flex:1; display:none; gap:1.6rem; } @media (min-width:1024px){ .bar-l{ display:flex; } }
+.bar-l a:hover{ color:var(--amber); }
+.bar-c{ flex:1; text-align:center; font-size:1.15rem; letter-spacing:0.3em;
+        text-transform:uppercase; }
+.bar-r{ flex:1; display:flex; align-items:center; justify-content:flex-end; gap:1rem; }
+.bar-cta{ display:none; color:var(--amber); } @media (min-width:640px){ .bar-cta{ display:inline; } }
+.burger{ width:2.3rem; height:2.3rem; border-radius:62.5rem; display:grid; place-content:center;
+         gap:5px; border:1px solid var(--line); background:rgba(5,6,11,.5); }
+.burger:hover{ border-color:var(--amber); }
+.burger i{ display:block; width:0.9rem; height:1px; background:currentColor; }
+
+/* ── hero ──────────────────────────────────────────────────────────────── */
+.hero{ min-height:calc(100svh - 7rem); display:flex; flex-direction:column;
+       justify-content:center; align-items:center; text-align:center; padding:5rem 1rem 3rem; }
+.hero-h{ font-size:clamp(1.9rem,4.3vw,3.5rem); line-height:1.24; margin-top:1.6rem;
+         text-wrap:balance; text-shadow:0 2px 40px rgba(5,6,11,.95); }
+.hero-sub{ font-size:0.98rem; color:rgba(232,230,223,.68); max-width:34rem; margin-top:1.8rem;
+           text-shadow:0 2px 24px rgba(5,6,11,.9); }
+.hero-cta{ display:flex; align-items:center; gap:1.3rem; margin-top:2.4rem; flex-wrap:wrap;
+           justify-content:center; }
+.hint{ font-size:0.6rem; text-transform:uppercase; letter-spacing:0.2em; color:var(--soft); }
+
+/* ── ephemeris ─────────────────────────────────────────────────────────── */
+.ephem{ padding:1rem; }
+.ephem dl{ display:grid; grid-template-columns:repeat(2,1fr); gap:1.4rem 1rem;
+           border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+           padding:1.5rem 0; }
+@media (min-width:700px){ .ephem dl{ grid-template-columns:repeat(4,1fr); } }
+.ephem dt{ font-family:"JetBrains Mono",monospace; font-size:0.54rem; text-transform:uppercase;
+           letter-spacing:0.22em; color:var(--soft); }
+.ephem dd{ font-size:1.05rem; margin-top:0.35rem; font-variant-numeric:tabular-nums;
+           color:var(--amber); }
+
+/* ── nights ────────────────────────────────────────────────────────────── */
+.nights{ padding:5rem 1rem 4rem; }
+.nights .h2{ margin-top:1.1rem; }
+.lede{ font-size:0.98rem; color:rgba(232,230,223,.66); margin-top:1.4rem; }
+.prog{ margin-top:3rem; }
+.prog li{ display:grid; grid-template-columns:1fr auto; gap:0.5rem 1.5rem;
+          border-top:1px solid var(--line); padding:1.5rem 0; }
+@media (min-width:640px){ .prog li{ grid-template-columns:7rem 1fr 4rem; align-items:baseline; } }
+.prog b{ font-size:0.72rem; font-weight:400; letter-spacing:0.1em; color:var(--torch); }
+.prog h3{ font-size:1.35rem; }
+.prog p{ font-size:0.87rem; color:rgba(232,230,223,.55); margin-top:0.4rem; }
+.prog em{ font-style:normal; font-size:0.78rem; color:var(--soft); text-align:right;
+          font-variant-numeric:tabular-nums; }
+@media (max-width:639px){ .prog li > div{ grid-column:1/-1; } }
+
+/* ── instruments ───────────────────────────────────────────────────────── */
+.instruments{ padding:4rem 1rem 5rem; }
+.instruments .h2{ margin-top:1.1rem; }
+.ins{ margin-top:3rem; display:grid; gap:1.5rem; }
+.ins li{ border-top:1px solid var(--line); padding-top:1.5rem; }
+.in-n{ font-size:0.95rem; color:var(--amber); letter-spacing:0.1em; }
+.ins h3{ font-size:1.5rem; margin-top:0.5rem; }
+.ins p{ font-size:0.9rem; color:rgba(232,230,223,.6); margin-top:0.6rem; }
+.ins dl{ display:flex; gap:2.4rem; margin-top:1.2rem; }
+.ins dt{ font-family:"JetBrains Mono",monospace; font-size:0.52rem; text-transform:uppercase;
+         letter-spacing:0.22em; color:var(--soft); }
+.ins dd{ font-family:"JetBrains Mono",monospace; font-size:0.86rem; margin-top:0.25rem; }
+
+/* ── join ──────────────────────────────────────────────────────────────── */
+.join{ padding:4rem 1rem 6rem; }
+.jn-h{ font-size:clamp(1.9rem,4vw,3.2rem); margin-top:1.1rem; }
+.jn-in > p{ font-size:0.96rem; color:rgba(232,230,223,.62); margin-top:1.3rem; }
+.jn-form{ display:flex; flex-direction:column; gap:1rem; margin-top:2.4rem; }
+@media (min-width:640px){ .jn-form{ flex-direction:row; align-items:flex-end; flex-wrap:wrap; } }
+.jn-form label{ display:flex; flex-direction:column; gap:0.5rem; flex:1 1 11rem; }
+.jn-form span{ font-family:"JetBrains Mono",monospace; font-size:0.54rem; text-transform:uppercase;
+               letter-spacing:0.22em; color:var(--soft); }
+.jn-form input{ background:rgba(232,230,223,.06); border:1px solid var(--line);
+                border-radius:62.5rem; padding:0.8rem 1.1rem; font-size:0.85rem; color:var(--paper); }
+.jn-form input::placeholder{ color:rgba(232,230,223,.28); }
+.jn-form input:focus{ outline:none; border-color:var(--amber); }
+.jn-ok{ flex-basis:100%; font-size:0.8rem; color:var(--amber); min-height:1.2rem; }
+
+/* ── footer ────────────────────────────────────────────────────────────── */
+.foot{ max-width:var(--col); margin:0 auto; border-top:1px solid var(--line);
+       padding:3rem 1rem 2.4rem; }
+.foot-mark{ font-size:1.4rem; letter-spacing:0.26em; text-transform:uppercase; }
+.foot-top{ display:flex; flex-direction:column; gap:0.9rem; padding-bottom:2.4rem; }
+.foot-top p{ font-size:0.85rem; color:var(--soft); max-width:28rem; }
+.foot-cols{ display:grid; gap:2.2rem; padding:2.2rem 0; border-top:1px solid var(--line); }
+@media (min-width:640px){ .foot-cols{ grid-template-columns:repeat(3,1fr); } }
+.foot-cols h4{ font-family:"JetBrains Mono",monospace; font-size:0.52rem; font-weight:400;
+               text-transform:uppercase; letter-spacing:0.22em; color:var(--soft); }
+.foot-cols ul{ margin-top:0.9rem; display:grid; gap:0.6rem; font-size:0.85rem; }
+.foot-cols a{ color:rgba(232,230,223,.78); } .foot-cols a:hover{ color:var(--amber); }
+.foot-cols address{ font-style:normal; display:grid; gap:0.6rem; font-size:0.85rem;
+                    color:rgba(232,230,223,.78); align-content:start; }
+.foot-cols address span{ color:var(--soft); }
+.foot-bar{ display:flex; flex-direction:column; gap:0.5rem; padding-top:1.5rem;
+           border-top:1px solid var(--line); font-family:"JetBrains Mono",monospace;
+           font-size:0.6rem; letter-spacing:0.08em; color:var(--soft); }
+@media (min-width:640px){ .foot-bar{ flex-direction:row; justify-content:space-between; } }
+
+/* ── menu ──────────────────────────────────────────────────────────────── */
+.menu{ position:fixed; inset:0; z-index:120; display:flex; flex-direction:column; }
+.menu[hidden]{ display:none; }
+.menu-bg{ position:absolute; inset:0; background:rgba(5,6,11,.97); opacity:0; }
+.menu-panel{ position:relative; flex:1; display:flex; flex-direction:column;
+             padding:1.3rem 1.5rem 1.7rem; opacity:0; }
+@media (min-width:640px){ .menu-panel{ padding:1.7rem 1.75rem 2.4rem; } }
+.menu-top{ display:flex; align-items:center; justify-content:space-between; }
+.x{ width:2.3rem; height:2.3rem; border-radius:62.5rem; display:grid; place-content:center;
+    border:1px solid var(--line); transition:background .3s,transform .4s; }
+.x:hover{ background:rgba(255,207,122,.16); transform:rotate(90deg); }
+.x svg{ width:1rem; height:1rem; }
+.menu-nav{ flex:1; display:flex; flex-direction:column; justify-content:center; gap:0.2rem;
+           align-items:center; text-align:center; }
+.menu-nav a{ font-size:clamp(2rem,6vw,4.2rem); line-height:1.14; opacity:0;
+             transform:translateY(1.6rem); transition:color .3s; }
+.menu-nav a:hover{ color:var(--amber); }
+.menu-foot{ display:flex; justify-content:space-between; padding-top:1.5rem;
+            border-top:1px solid var(--line); font-family:"JetBrains Mono",monospace;
+            font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--soft); }
+
+</style>
+</head>
+<body>
+<div class="ldr" aria-hidden="true">
+  <div class="ldr-mark">ORRERY</div>
+  <div class="ldr-track"><i></i></div>
+  <div class="ldr-num">00</div>
+</div>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="vig" aria-hidden="true"></div>
+
+<main>
+  <header class="bar">
+    <nav class="bar-l"><a href="#nights">Public nights</a><a href="#instruments">Instruments</a></nav>
+    <a class="bar-c" href="#top">Orrery</a>
+    <div class="bar-r">
+      <a class="bar-cta" href="#join">Join</a>
+      <button class="burger" type="button" aria-label="Open menu" aria-expanded="false"><i></i><i></i></button>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <p class="eyebrow" data-rv="rise-s" data-gate><i></i>Founded 1841 · 220 m above sea level</p>
+    <h1 class="hero-h" data-rv="lines" data-gate data-lines="We have watched|the same sky|from the same hill|for a hundred|and eighty-five years" data-stag="120" data-dur="1050"></h1>
+    <p class="hero-sub" data-rv="words" data-gate data-d="620">An amateur observatory with two working refractors, one of them older than the building. Public nights every clear Friday, no charge, no booking, no telescope required.</p>
+    <div class="hero-cta" data-rv="rise" data-gate data-d="920">
+      <a class="pill" href="#nights">Next clear Friday<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <span class="hint">Drag the sky</span>
+    </div>
+  </section>
+
+  <section class="ephem">
+    <dl>
+      <div><dt>Bodies tracked</dt><dd id="ep-n">—</dd></div>
+      <div><dt>Sidereal</dt><dd id="ep-t">--:--:--</dd></div>
+      <div><dt>Seeing</dt><dd id="ep-s">—</dd></div>
+      <div><dt>Moon</dt><dd id="ep-m">—</dd></div>
+    </dl>
+  </section>
+
+  <section class="nights" id="nights">
+    <p class="eyebrow"><i></i>Every clear Friday</p>
+    <h2 class="h2" data-rv="lines" data-lines="If you can see|three stars, we|are open" data-stag="120"></h2>
+    <p class="lede" data-rv="words" data-d="180">The dome opens at dusk and closes when the last person leaves, which in December is about nine and in June is about two in the morning. There is a kettle and there are no chairs.</p>
+    <ol class="prog">
+      <li data-rv="rise-s" data-d="0"><b>Fri 22 Aug</b><div><h3>Saturn at opposition</h3><p>Rings open to twenty-six degrees, the best they will be this decade. The 8-inch refractor will be on it all night.</p></div><em>21:10</em></li>
+      <li data-rv="rise-s" data-d="70"><b>Fri 29 Aug</b><div><h3>Double stars for beginners</h3><p>Albireo, Mizar, and the one everybody argues about. Bring nothing; we will show you how to find them again from your garden.</p></div><em>21:00</em></li>
+      <li data-rv="rise-s" data-d="140"><b>Fri 05 Sep</b><div><h3>The Perseid tail</h3><p>Past the peak and therefore worth watching, because there is nobody else on the hill.</p></div><em>20:45</em></li>
+      <li data-rv="rise-s" data-d="210"><b>Fri 12 Sep</b><div><h3>Lecture: parallax</h3><p>How the first person to measure the distance to a star did it with a brass instrument and eleven months of patience.</p></div><em>19:30</em></li>
+    </ol>
+  </section>
+
+  <section class="instruments" id="instruments">
+    <p class="eyebrow"><i></i>What is under the dome</p>
+    <h2 class="h2" data-rv="lines" data-lines="Two refractors|and a great|deal of brass" data-stag="120"></h2>
+    <ul class="ins">
+      <li data-rv="rise" data-d="0"><span class="in-n">I</span><h3>The Cooke</h3><p>An 8-inch Cooke refractor of 1888, on its original clock drive. It is the reason the society exists and it is still the best instrument on the hill.</p><dl><div><dt>Aperture</dt><dd>203 mm</dd></div><div><dt>Focal</dt><dd>2 900 mm</dd></div><div><dt>Built</dt><dd>1888</dd></div></dl></li>
+      <li data-rv="rise" data-d="110"><span class="in-n">II</span><h3>The Grubb</h3><p>A 5-inch Grubb from 1902, mounted on the south pier. Easier to point, easier to share, and the one every visitor actually looks through.</p><dl><div><dt>Aperture</dt><dd>127 mm</dd></div><div><dt>Focal</dt><dd>1 520 mm</dd></div><div><dt>Built</dt><dd>1902</dd></div></dl></li>
+      <li data-rv="rise" data-d="220"><span class="in-n">III</span><h3>The transit</h3><p>A meridian transit instrument that has not been used in earnest since 1961 and is kept working out of stubbornness.</p><dl><div><dt>Aperture</dt><dd>76 mm</dd></div><div><dt>Focal</dt><dd>910 mm</dd></div><div><dt>Built</dt><dd>1874</dd></div></dl></li>
+    </ul>
+  </section>
+
+  <section class="join" id="join">
+    <div class="jn-in">
+      <p class="eyebrow"><i></i>Membership</p>
+      <h2 class="jn-h" data-rv="lines" data-lines="Eighteen pounds|a year, and a|key to the gate" data-stag="120"></h2>
+      <p data-rv="words" data-d="200">Members get the gate code, the observing log, and the right to be on the hill at three in the morning without explaining themselves to anybody.</p>
+      <form class="jn-form" novalidate>
+        <label><span>Name</span><input type="text" name="name" placeholder="E. Bessel" autocomplete="name"></label>
+        <label><span>Email</span><input type="email" name="email" placeholder="you@email.com" autocomplete="email"></label>
+        <button class="pill" type="submit">Ask about a key<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <p class="jn-ok" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="foot" id="contact">
+    <div class="foot-top">
+      <a class="foot-mark" href="#top">Orrery</a>
+      <p>An amateur observatory and astronomical society. Beacon Hill, up the track past the reservoir.</p>
+    </div>
+    <div class="foot-cols">
+      <nav><h4>Observing</h4><ul><li><a href="#nights">Public nights</a></li><li><a href="#instruments">Instruments</a></li><li><a href="#nights">Lectures</a></li><li><a href="#join">The log</a></li></ul></nav>
+      <nav><h4>Society</h4><ul><li><a href="#join">Membership</a></li><li><a href="#contact">Archive</a></li><li><a href="#contact">Light pollution</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+      <address>
+        <a href="mailto:dome@orrery.org">dome@orrery.org</a>
+        <span>Beacon Hill, past the reservoir</span>
+        <span>Open when it is clear</span>
+      </address>
+    </div>
+    <div class="foot-bar"><span>© 2026 Orrery Astronomical Society</span><span>Founded 1841 · Bortle 4</span></div>
+  </footer>
+</main>
+
+<div class="menu" hidden>
+  <div class="menu-bg"></div>
+  <div class="menu-panel">
+    <div class="menu-top">
+      <span class="foot-mark">Orrery</span>
+      <button class="x" type="button" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <nav class="menu-nav"><a href="#nights">Public nights</a><a href="#instruments">Instruments</a><a href="#join">Membership</a><a href="#contact">Find us</a></nav>
+    <div class="menu-foot"><span>Beacon Hill</span><span>Founded 1841</span></div>
+  </div>
+</div>
+
+<script>
+/* ── engine.js ─────────────────────────────────────────────────────────────
+ * The motion plumbing behind the editorial wave. Zero dependencies: no Lenis,
+ * no GSAP, no framework. Everything here is either a spring or a lerp on one
+ * rAF loop, because the alternative is a CDN this page cannot render without.
+ *
+ * Load it BEFORE the site's own script and call `Engine.boot()` last.
+ * ------------------------------------------------------------------------ */
+const Engine = (() => {
+  'use strict';
+
+  const html = document.documentElement;
+  const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* Read the tier ONCE. matchMedia inside a per-frame branch is a layout read
+   * on every subscriber, every frame, forever. */
+  const COARSE = matchMedia('(pointer: coarse)').matches;
+  const MOBILE = innerWidth <= 768;
+  const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+  const clamp01 = v => clamp(v, 0, 1);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  /* Frame-rate independent easing. `x += (t-x)*k` is only the intended speed
+   * at 60fps; on a 120Hz display it converges twice as fast and every timing
+   * in the page is silently halved. */
+  const damp = (x, t, k, dt) => x + (t - x) * (1 - Math.pow(1 - k, dt * 60));
+  const range = (v, a, b) => clamp01((v - a) / (b - a));
+  const smoother = x => x * x * x * (x * (x * 6 - 15) + 10);
+  const easeOutExpo  = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+  const easeOutQuart = x => 1 - Math.pow(1 - x, 4);
+  const easeInOutCubic = x => x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+  const EASE = { easeOutExpo, easeOutQuart, easeInOutCubic };
+
+  /* ── ONE ticker ─────────────────────────────────────────────────────────
+   * Every subscriber gets its OWN dt. A shared dt computed once is wrong for
+   * anything added mid-run, and the first frame after a tab wakes is a 4000ms
+   * step that teleports every spring in the page. Hence the 0.05 clamp. */
+  const subs = [];
+  let last = performance.now(), running = false;
+  function tick(now) {
+    requestAnimationFrame(tick);
+    for (let i = subs.length - 1; i >= 0; i--) {
+      const s = subs[i];
+      const dt = Math.min(0.05, (now - s.at) / 1000) || 0.016;
+      s.at = now;
+      if (s.fn(dt, now) === false) subs.splice(i, 1);
+    }
+    last = now;
+  }
+  const add = fn => { subs.push({ fn, at: performance.now() }); return fn; };
+  function start() { if (running) return; running = true; requestAnimationFrame(tick); }
+
+  /* ── spring ─────────────────────────────────────────────────────────────
+   * react-spring's {tension, friction} model, integrated with a fixed 1/120s
+   * substep. Integrating the raw frame dt makes a stiff spring explode on the
+   * first long frame — which is the frame right after the loader lifts. */
+  function Spring(value, cfg) {
+    return { v: 0, x: value, to: value, t: cfg.tension, f: cfg.friction, done: true };
+  }
+  function stepSpring(s, dt) {
+    if (s.done) return s.x;
+    let rem = Math.min(dt, 0.05);
+    const h = 1 / 120;
+    while (rem > 0) {
+      const step = Math.min(h, rem); rem -= step;
+      s.v += (-s.t * (s.x - s.to) - s.f * s.v) * step;
+      s.x += s.v * step;
+    }
+    if (Math.abs(s.x - s.to) < 0.0008 && Math.abs(s.v) < 0.0008) { s.x = s.to; s.v = 0; s.done = true; }
+    return s.x;
+  }
+
+  /* ── smooth scroll ──────────────────────────────────────────────────────
+   * Wheel only. Touch keeps its native momentum, which is better than
+   * anything a rAF loop can fake and is what the OS gesture is calibrated to.
+   * The native scroll position stays authoritative, so sticky, IO and anchors
+   * all keep working — a transform-on-a-wrapper smooth scroll breaks all three. */
+  const SS = { on: false, target: 0, cur: 0, ease: 0.115, wrote: -1, locked: false };
+  function maxScroll() { return Math.max(0, document.documentElement.scrollHeight - innerHeight); }
+  function onWheel(e) {
+    if (!SS.on || SS.locked || e.ctrlKey) return;
+    e.preventDefault();
+    const m = e.deltaMode === 1 ? 18 : e.deltaMode === 2 ? innerHeight : 1;
+    SS.target = clamp(SS.target + e.deltaY * m, 0, maxScroll());
+  }
+  function scrollTick(dt) {
+    if (!SS.on) return;
+    /* Anything that moved the page without going through us — a scrollbar
+     * drag, a keyboard PageDown, an anchor jump — resyncs the filter instead
+     * of being fought by it. */
+    if (Math.abs(scrollY - SS.wrote) > 2) { SS.cur = SS.target = scrollY; }
+    SS.target = clamp(SS.target, 0, maxScroll());
+    SS.cur = damp(SS.cur, SS.target, SS.ease, dt);
+    if (Math.abs(SS.cur - SS.target) < 0.08) SS.cur = SS.target;
+    if (Math.abs(SS.cur - scrollY) > 0.05) { SS.wrote = SS.cur; scrollTo(0, SS.cur); }
+    else SS.wrote = scrollY;
+  }
+  function smoothTo(y, ms = 900) {
+    const from = scrollY, to = clamp(y, 0, maxScroll()), t0 = performance.now();
+    SS.locked = true;
+    add(() => {
+      const k = clamp01((performance.now() - t0) / ms);
+      const v = lerp(from, to, easeInOutCubic(k));
+      SS.wrote = SS.cur = SS.target = v; scrollTo(0, v);
+      if (k >= 1) { SS.locked = false; return false; }
+    });
+  }
+  function lock(on) {
+    html.classList.toggle('is-locked', on);
+    SS.locked = on;
+    if (!on) { SS.cur = SS.target = scrollY; SS.wrote = scrollY; }
+  }
+
+  /* ── split ──────────────────────────────────────────────────────────────
+   * Lines are AUTHORED with `|`, never measured. Measuring means re-measuring
+   * on every resize and on the frame the webfont swaps, and a headline that
+   * re-splits mid-reveal drops half its words on the floor. */
+  function splitLines(el) {
+    const raw = el.dataset.lines || el.textContent;
+    const lines = raw.split('|').map(s => s.trim()).filter(Boolean);
+    el.textContent = '';
+    const sr = document.createElement('span');
+    /* The accessible copy is the PLAIN text. A line may carry an <em> for a
+     * colour shift, and a screen reader reading the markup back is not what
+     * the tag is there for. */
+    sr.className = 'sr'; sr.textContent = lines.join(' ').replace(/<[^>]+>/g, '');
+    el.appendChild(sr);
+    return lines.map(t => {
+      const box = document.createElement('span');
+      box.className = 'rv-clip'; box.setAttribute('aria-hidden', 'true');
+      const inner = document.createElement('i');
+      inner.innerHTML = t; box.appendChild(inner); el.appendChild(box);
+      return inner;
+    });
+  }
+  function splitWords(el) {
+    const raw = (el.dataset.lines || el.textContent).replace(/\s+/g, ' ').trim();
+    el.textContent = '';
+    const sr = document.createElement('span');
+    sr.className = 'sr'; sr.textContent = raw;
+    el.appendChild(sr);
+    const out = [];
+    raw.split(' ').forEach((w, i) => {
+      const box = document.createElement('span');
+      box.className = 'rv-w'; box.setAttribute('aria-hidden', 'true');
+      const inner = document.createElement('i');
+      inner.textContent = w; box.appendChild(inner); el.appendChild(box);
+      if (i < raw.split(' ').length - 1) el.appendChild(document.createTextNode(' '));
+      out.push(inner);
+    });
+    return out;
+  }
+
+  /* ── the reveal engine ──────────────────────────────────────────────────
+   * One IntersectionObserver for the whole page. One per element is a
+   * separate compositor callback each, and these pages carry ~120 of them. */
+  const REVEALED = new WeakSet();
+  function play(el) {
+    if (REVEALED.has(el)) return; REVEALED.add(el);
+    const kind = el.dataset.rv;
+    const delay = +(el.dataset.d || 0);
+    const dur = +(el.dataset.dur || 0);
+    const stag = +(el.dataset.stag || 0);
+    const ez = EASE[el.dataset.ease] || easeOutExpo;
+
+    if (kind === 'lines' || kind === 'words') {
+      const parts = el._parts || (el._parts = kind === 'lines' ? splitLines(el) : splitWords(el));
+      const D = dur || (kind === 'lines' ? 950 : 800);
+      const ST = stag || (kind === 'lines' ? 120 : 34);
+      parts.forEach((p, i) => {
+        const t0 = performance.now() + delay + i * ST;
+        add(() => {
+          const k = clamp01((performance.now() - t0) / D);
+          if (k <= 0) return;
+          const e = ez(k);
+          p.style.transform = 'translateY(' + ((1 - e) * 115) + '%)';
+          p.style.opacity = String(Math.min(1, k * 3));
+          if (k >= 1) { p.style.transform = 'none'; p.style.opacity = '1'; p.style.willChange = 'auto'; return false; }
+        });
+      });
+      return;
+    }
+    if (kind === 'count') {
+      const to = parseFloat(el.dataset.count || '0');
+      const suffix = el.dataset.suffix || '';
+      const D = dur || 1400, t0 = performance.now() + delay;
+      add(() => {
+        const k = clamp01((performance.now() - t0) / D);
+        if (k <= 0) return;
+        el.textContent = Math.round(to * easeOutQuart(k)).toLocaleString() + suffix;
+        if (k >= 1) return false;
+      });
+      return;
+    }
+    /* Everything else is a two-property spring: opacity and one transform. */
+    const cfg = { tension: +(el.dataset.ten || 190), friction: +(el.dataset.fri || 26) };
+    const s = Spring(0, cfg); s.to = 1; s.done = false;
+    const from = { rise: 28, 'rise-s': 16, 'rise-l': 48 }[kind] ?? 0;
+    const t0 = performance.now() + delay;
+    add(dt => {
+      if (performance.now() < t0) return;
+      const k = stepSpring(s, dt);
+      if (kind === 'pop')       el.style.transform = 'scale(' + lerp(0.9, 1, k) + ')';
+      else if (kind === 'wipe') el.style.clipPath = 'inset(0 0 ' + ((1 - k) * 100) + '% 0)';
+      else if (kind === 'grow') el.style.transform = 'scaleX(' + k + ')';
+      else if (from)            el.style.transform = 'translateY(' + ((1 - k) * from / 16) + 'rem)';
+      if (kind !== 'grow' && kind !== 'wipe') el.style.opacity = String(clamp01(k * 1.15));
+      if (s.done) { el.style.transform = kind === 'wipe' ? '' : 'none'; el.style.opacity = '1';
+                    el.style.clipPath = 'none'; el.style.willChange = 'auto'; return false; }
+    });
+  }
+
+  let io = null;
+  function observe(root = document) {
+    const nodes = root.querySelectorAll('[data-rv]:not([data-gate])');
+    nodes.forEach(n => io.observe(n));
+  }
+
+  /* ── scroll-progress effects ────────────────────────────────────────────
+   * `data-px` is read once into a plain array and driven from the ticker.
+   * Reading getBoundingClientRect per element per frame is the single most
+   * common reason one of these pages runs at 40fps: it forces a layout flush
+   * in the middle of the frame, once per element. Rects are cached and
+   * invalidated on resize instead. */
+  const PX = [];
+  function collectPx(root = document) {
+    root.querySelectorAll('[data-px]').forEach(el => {
+      const spec = el.dataset.px.split(';').map(s => s.trim()).filter(Boolean).map(s => {
+        const [prop, vals] = s.split(':');
+        const [a, b] = vals.split(',').map(parseFloat);
+        return { prop, a, b };
+      });
+      PX.push({ el, spec, scope: el.closest('[data-px-scope]') || el, top: 0, h: 1 });
+    });
+    measurePx();
+  }
+  function measurePx() {
+    for (const p of PX) {
+      const r = p.scope.getBoundingClientRect();
+      p.top = r.top + scrollY; p.h = r.height;
+    }
+  }
+  function pxTick() {
+    if (!PX.length) return;
+    const vh = innerHeight, y = scrollY;
+    for (const p of PX) {
+      /* 0 when the block's top meets the viewport bottom, 1 when its bottom
+       * meets the viewport top. The denominator carries + vh, so a block
+       * taller than the screen still reaches 1 rather than stalling. */
+      const t = clamp01((y + vh - p.top) / (p.h + vh));
+      let tr = '', op = null;
+      for (const s of p.spec) {
+        const v = lerp(s.a, s.b, t);
+        if (s.prop === 'ty') tr += ' translate3d(0,' + v + '%,0)';
+        else if (s.prop === 'tx') tr += ' translate3d(' + v + '%,0,0)';
+        else if (s.prop === 'tyr') tr += ' translate3d(0,' + v + 'rem,0)';
+        else if (s.prop === 's') tr += ' scale(' + v + ')';
+        else if (s.prop === 'r') tr += ' rotate(' + v + 'deg)';
+        else if (s.prop === 'o') op = v;
+      }
+      if (tr) p.el.style.transform = tr;
+      if (op !== null) p.el.style.opacity = String(clamp01(op));
+    }
+  }
+
+  /* ── hover springs ──────────────────────────────────────────────────────
+   * Off below 768px. A hover state on a touch device sticks after the tap and
+   * the card stays lifted until something else is touched. */
+  function hovers(root = document) {
+    if (MOBILE || COARSE || REDUCED) return;
+    root.querySelectorAll('[data-hv]').forEach(el => {
+      const spec = el.dataset.hv.split(';').map(s => s.trim()).filter(Boolean).map(s => {
+        const [prop, v] = s.split(':'); return { prop, v: parseFloat(v) };
+      });
+      const trg = el.dataset.hvt ? el.querySelector(el.dataset.hvt) : el;
+      if (!trg) return;
+      const s = Spring(0, { tension: +(el.dataset.hvten || 300), friction: +(el.dataset.hvfri || 22) });
+      let live = false;
+      const paint = k => {
+        let tr = '';
+        for (const p of spec) {
+          if (p.prop === 'y') tr += ' translateY(' + (p.v * k) + 'px)';
+          else if (p.prop === 'x') tr += ' translateX(' + (p.v * k) + 'px)';
+          else if (p.prop === 'sc') tr += ' scale(' + lerp(1, p.v, k) + ')';
+          else if (p.prop === 'r') tr += ' rotate(' + (p.v * k) + 'deg)';
+          else if (p.prop === 'o') trg.style.opacity = String(lerp(1, p.v, k));
+        }
+        if (tr) trg.style.transform = tr;
+      };
+      const run = () => { if (live) return; live = true;
+        add(dt => { paint(stepSpring(s, dt)); if (s.done) { live = false; return false; } }); };
+      el.addEventListener('pointerenter', () => { s.to = 1; s.done = false; run(); });
+      el.addEventListener('pointerleave', () => { s.to = 0; s.done = false; run(); });
+      el.addEventListener('focusin',  () => { s.to = 1; s.done = false; run(); });
+      el.addEventListener('focusout', () => { s.to = 0; s.done = false; run(); });
+    });
+  }
+
+  /* ── marquee ────────────────────────────────────────────────────────────*/
+  function marquees(root = document) {
+    root.querySelectorAll('[data-marq]').forEach(el => {
+      const speed = parseFloat(el.dataset.marq) || 40;
+      const inner = el.firstElementChild; if (!inner) return;
+      const one = inner.cloneNode(true);
+      let w = inner.getBoundingClientRect().width;
+      /* Fill at least two screens, or a wide monitor shows the gap between
+       * the original and its single clone. */
+      const need = Math.max(2, Math.ceil((innerWidth * 2) / Math.max(w, 1)) + 1);
+      for (let i = 1; i < need; i++) el.appendChild(one.cloneNode(true));
+      let x = 0;
+      add(dt => {
+        w = inner.getBoundingClientRect().width || w;
+        x -= speed * dt; if (x <= -w) x += w;
+        for (const c of el.children) c.style.transform = 'translate3d(' + x + 'px,0,0)';
+      });
+    });
+  }
+
+  /* ── drag rail ──────────────────────────────────────────────────────────*/
+  function drags(root = document) {
+    root.querySelectorAll('[data-drag]').forEach(el => {
+      let x = 0, tx = 0, down = false, px = 0, vel = 0, maxX = 0;
+      const meas = () => { maxX = Math.max(0, el.scrollWidth - el.clientWidth); };
+      meas(); addEventListener('resize', meas);
+      el.classList.add('drag');
+      el.addEventListener('pointerdown', e => {
+        down = true; px = e.clientX; vel = 0; el.classList.add('is-drag');
+        el.setPointerCapture(e.pointerId);
+      });
+      el.addEventListener('pointermove', e => {
+        if (!down) return; const d = e.clientX - px; px = e.clientX;
+        tx = clamp(tx - d, 0, maxX); vel = -d;
+      });
+      const up = () => { down = false; el.classList.remove('is-drag'); };
+      el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+      el.addEventListener('wheel', e => {
+        if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
+        e.preventDefault(); tx = clamp(tx + e.deltaX, 0, maxX);
+      }, { passive: false });
+      add(dt => {
+        if (!down) { tx = clamp(tx + vel * 0.9, 0, maxX); vel *= Math.pow(0.001, dt); if (Math.abs(vel) < 0.05) vel = 0; }
+        x = damp(x, tx, 0.16, dt);
+        el.scrollLeft = x;
+      });
+    });
+  }
+
+  /* ── the loader ─────────────────────────────────────────────────────────
+   * Springs toward REAL progress, holds at 0.9 while the first paint is
+   * outstanding, and lifts regardless past PATIENCE. A loader gated only on
+   * `load` is a permanently dark page the day one webfont host is slow. */
+  const MIN_MS = 1200, PATIENCE = 5200, EXIT_MS = 900;
+  let readyFns = [];
+  function onReady(fn) { readyFns.push(fn); }
+  /* A gate the page can hold open — the WebGL builds use it to keep the
+   * curtain down until the FIRST FRAME has actually been drawn. Revealing on
+   * `load` shows a black canvas for the two frames it takes to compile the
+   * shaders, which reads as a broken page rather than as a fast one.
+   * PATIENCE still wins: a gate that never releases must not trap the page. */
+  let holds = 0;
+  function hold() { holds++; }
+  function release() { holds = Math.max(0, holds - 1); }
+  function boot(opts = {}) {
+    html.classList.remove('no-js');
+    start();
+    add(scrollTick); add(dt => pxTick());
+    io = new IntersectionObserver((es) => {
+      for (const e of es) if (e.isIntersecting) { play(e.target); io.unobserve(e.target); }
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.01 });
+
+    /* Pre-split every gated headline NOW, so the loader's exit and the
+     * headline's entrance are not separated by a layout pass. */
+    document.querySelectorAll('[data-rv="lines"],[data-rv="words"]').forEach(el => {
+      if (!el._parts) el._parts = el.dataset.rv === 'lines' ? splitLines(el) : splitWords(el);
+    });
+    observe(); collectPx(); hovers(); marquees(); drags();
+
+    /* Above 1920 the media queries have run out; scale the root up in JS. */
+    const FONT_BASE = 16, BASE_W = 1920, COEF = 0.6666;
+    const rem = () => {
+      const red = ((BASE_W - innerWidth) / BASE_W) * 100 * COEF;
+      const size = FONT_BASE - (FONT_BASE * red) / 100;
+      if (size > FONT_BASE) html.style.fontSize = size + 'px';
+      else html.style.removeProperty('font-size');
+    };
+    rem(); addEventListener('resize', () => { rem(); measurePx(); });
+
+    /* Anchors go through the filter, not through the browser. */
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href^="#"]'); if (!a) return;
+      const id = a.getAttribute('href'); if (id.length < 2) return;
+      const t = document.querySelector(id); if (!t) return;
+      e.preventDefault();
+      smoothTo(t.getBoundingClientRect().top + scrollY - (opts.anchorOffset || 0));
+      if (opts.onAnchor) opts.onAnchor();
+    });
+
+    if (!COARSE && !REDUCED) { SS.on = true; SS.cur = SS.target = scrollY; addEventListener('wheel', onWheel, { passive: false }); }
+
+    const ldr = document.querySelector('.ldr');
+    const fill = ldr && ldr.querySelector('.ldr-track > i');
+    const num = ldr && ldr.querySelector('.ldr-num');
+    lock(true); scrollTo(0, 0);
+
+    let real = 0.04, shown = 0, loaded = false, t0 = performance.now(), done = false;
+    const imgs = [...document.images].filter(i => !i.complete);
+    let n = 0;
+    imgs.forEach(i => {
+      const bump = () => { n++; real = 0.08 + 0.72 * (n / imgs.length); };
+      i.addEventListener('load', bump); i.addEventListener('error', bump);
+    });
+    if (!imgs.length) real = 0.8;
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { real = Math.max(real, 0.86); });
+    addEventListener('load', () => { loaded = true; });
+
+    const finish = () => {
+      if (done) return; done = true;
+      lock(false);
+      readyFns.forEach(f => { try { f(); } catch (e) { console.error(e); } });
+      document.querySelectorAll('[data-gate]').forEach(el => { el.removeAttribute('data-gate'); play(el); });
+      measurePx();
+      if (!ldr) return;
+      if (REDUCED) { ldr.remove(); return; }
+      const s0 = performance.now();
+      add(() => {
+        const k = clamp01((performance.now() - s0) / EXIT_MS);
+        ldr.style.transform = 'translateY(' + (-105 * easeInOutCubic(k)) + '%)';
+        if (k >= 1) { ldr.remove(); return false; }
+      });
+    };
+
+    add(dt => {
+      const el = performance.now() - t0;
+      /* ONE target, chosen, then ONE damp toward it. Two damp lines on the
+       * same variable do not compose — they settle at a weighted average of
+       * their two targets, which parked this bar at 0.96 forever and left a
+       * page that looked finished sitting under its own curtain. */
+      let want = Math.min(real, (loaded && !holds) ? 1 : 0.9);
+      if ((loaded && !holds && el > MIN_MS) || el > PATIENCE) want = 1;
+      shown = damp(shown, want, want === 1 ? 0.22 : 0.09, dt);
+      if (fill) fill.style.transform = 'scaleX(' + shown + ')';
+      if (num) num.textContent = String(Math.round(shown * 100)).padStart(2, '0');
+      if (shown > 0.995 && el > (REDUCED ? 200 : MIN_MS)) { finish(); return false; }
+    });
+  }
+
+  return { boot, onReady, add, start, hold, release, Spring, stepSpring, smoothTo, lock, observe,
+           clamp, clamp01, lerp, damp, range, smoother, EASE, REDUCED, MOBILE, COARSE,
+           splitWords, splitLines, measurePx, play };
+})();
+window.Engine = Engine;
+
+/* ── site-level helpers ────────────────────────────────────────────────────
+ * These assume the shared editorial markup (.menu / .burger / .menu-nav a,
+ * a <form> with a .*-ok status line, and a step list driving a stack of
+ * <img data-step>). Ten sites wiring the same overlay ten times is ten
+ * chances to forget the scroll lock. */
+Engine.menu = function (opts = {}) {
+  const menu = document.querySelector('.menu'); if (!menu) return;
+  const bg = menu.querySelector('.menu-bg');
+  const panel = menu.querySelector('.menu-panel');
+  const links = [...menu.querySelectorAll('.menu-nav a')];
+  const burger = document.querySelector('.burger');
+  const close = menu.querySelector('.x');
+  let open = false;
+
+  function set(on) {
+    if (on === open) return; open = on;
+    if (burger) burger.setAttribute('aria-expanded', String(on));
+    Engine.lock(on);
+    if (on) menu.hidden = false;
+    const t0 = performance.now(), D = on ? 620 : 420;
+    Engine.add(() => {
+      const k = Engine.clamp01((performance.now() - t0) / D);
+      const e = on ? Engine.EASE.easeOutExpo(k) : 1 - Engine.EASE.easeInOutCubic(k);
+      if (bg) bg.style.opacity = String(e);
+      if (panel) { panel.style.opacity = String(Math.min(1, e * 1.6));
+                   panel.style.transform = 'translateY(' + ((1 - e) * -1.4) + 'rem)'; }
+      links.forEach((a, i) => {
+        /* The stagger runs on the OPEN only. Staggering the close means the
+         * last link is still on screen after the backdrop has gone. */
+        const kk = on ? Engine.clamp01((k - i * 0.07) / (1 - i * 0.07)) : k;
+        const ee = on ? Engine.EASE.easeOutExpo(kk) : e;
+        a.style.opacity = String(ee);
+        a.style.transform = 'translateY(' + ((1 - ee) * 1.6) + 'rem)';
+      });
+      if (k >= 1) { if (!on) menu.hidden = true; return false; }
+    });
+  }
+  if (burger) burger.addEventListener('click', () => set(true));
+  if (close) close.addEventListener('click', () => set(false));
+  if (bg) bg.addEventListener('click', () => set(false));
+  links.forEach(a => a.addEventListener('click', () => set(false)));
+  addEventListener('keydown', e => { if (e.key === 'Escape' && open) set(false); });
+  return { close: () => set(false), open: () => set(true) };
+};
+
+/* A form that never touches the network. Every one of these pages is a
+ * template: a fetch to an endpoint that does not exist is a console error on
+ * the buyer's first click. */
+Engine.formStub = function (sel, okSel, msg) {
+  const f = document.querySelector(sel); if (!f) return;
+  const out = f.querySelector(okSel);
+  const btn = f.querySelector('button[type=submit]');
+  f.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = (f.querySelector('input[name=name]') || {}).value || '';
+    const label = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.style.opacity = '.6'; }
+    setTimeout(() => {
+      if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = label; }
+      if (out) out.textContent = msg.replace('{name}', name.trim().split(' ')[0] || 'there');
+      f.reset();
+    }, 700);
+  });
+};
+
+/* A stack of absolutely-positioned <img data-step> crossfaded by whichever
+ * list item is nearest the middle of the viewport. Driven off the ticker with
+ * cached rects, not an observer per row: an observer fires on ENTRY, and the
+ * row that owns the screen is the one at its centre, not the one that just
+ * touched the edge. */
+Engine.steps = function (listSel, stackSel, tagSel) {
+  const rows = [...document.querySelectorAll(listSel)];
+  const imgs = [...document.querySelectorAll(stackSel + ' [data-step]')];
+  const tag = tagSel ? document.querySelector(tagSel) : null;
+  if (!rows.length || !imgs.length) return;
+  let cur = -1;
+  Engine.add(() => {
+    const mid = innerHeight * 0.52;
+    let best = 0, bd = 1e9;
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i].getBoundingClientRect();
+      const d = Math.abs(r.top + r.height / 2 - mid);
+      if (d < bd) { bd = d; best = i; }
+    }
+    if (best === cur) return;
+    cur = best;
+    imgs.forEach((im, i) => im.classList.toggle('on', i === best));
+    rows.forEach((r, i) => r.classList.toggle('is-on', i === best));
+    if (tag) {
+      const h = rows[best].querySelector('h3');
+      tag.innerHTML = '<b>' + String(best + 1).padStart(2, '0') + '</b> ' + (h ? h.textContent : '');
+    }
+  });
+};
+
+/* ── pinned horizontal scroll ──────────────────────────────────────────────
+ * A tall section whose inner screen is sticky; vertical scroll inside it is
+ * spent translating a wider-than-viewport track sideways. The travel is
+ * MEASURED, not authored — hard-coding it means the last card is either
+ * unreachable or parks half a screen early the moment the copy changes. */
+Engine.hscroll = function (secSel, trackSel) {
+  const sec = document.querySelector(secSel);
+  const track = document.querySelector(trackSel);
+  if (!sec || !track) return;
+  let top = 0, h = 1, travel = 0;
+  const meas = () => {
+    const r = sec.getBoundingClientRect();
+    top = r.top + scrollY; h = r.height;
+    travel = Math.max(0, track.scrollWidth - innerWidth);
+    /* The section is exactly as tall as the sideways distance plus one
+     * screen, so the track moves at roughly 1:1 with the wheel and the
+     * section never outstays the content. */
+    sec.style.height = (travel + innerHeight) + 'px';
+    const r2 = sec.getBoundingClientRect(); top = r2.top + scrollY; h = r2.height;
+  };
+  meas(); addEventListener('resize', meas);
+  if (document.fonts) document.fonts.ready.then(meas);
+  let x = 0;
+  Engine.add(dt => {
+    const p = Engine.clamp01((scrollY - top) / Math.max(1, h - innerHeight));
+    x = Engine.damp(x, -p * travel, 0.2, dt);
+    track.style.transform = 'translate3d(' + x + 'px,0,0)';
+  });
+};
+
+
+/* ── gl.js ─────────────────────────────────────────────────────────────────
+ * A small raw-WebGL2 layer for the particle builds. No three.js: every one of
+ * these pages draws ONE thing, and a 600KB scene graph to draw one instanced
+ * buffer is the whole page weight spent on abstraction nobody sees.
+ * ------------------------------------------------------------------------ */
+const GL = (() => {
+  'use strict';
+
+  /* DPR clamped TWICE — once to the device and once to a fragment budget.
+   * These are additive-blended point clouds: on a 3× display an unclamped
+   * canvas is nine times the fill rate for a cloud that is already soft. */
+  function dpr(canvas, budget) {
+    const w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
+    const coarse = matchMedia('(pointer: coarse)').matches;
+    return Math.max(1, Math.min(coarse ? 1.5 : 2, devicePixelRatio || 1,
+                               Math.sqrt(budget / Math.max(1, w * h))));
+  }
+
+  function ctx(canvas, opts = {}) {
+    const gl = canvas.getContext('webgl2', {
+      alpha: false, antialias: false, depth: !!opts.depth, stencil: false,
+      premultipliedAlpha: false, powerPreference: 'high-performance',
+      preserveDrawingBuffer: false, ...opts.attrs,
+    });
+    if (!gl) return null;
+    return gl;
+  }
+
+  function shader(gl, type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      /* Report the LINE the driver named, with its source, or a shader error
+       * is a wall of GLSL and a number with nothing to anchor it to. */
+      const log = gl.getShaderInfoLog(s) || '';
+      const n = +(log.match(/:(\d+):/) || [])[1];
+      const lines = src.split('\n');
+      const near = isFinite(n) ? lines.slice(Math.max(0, n - 3), n + 2)
+        .map((l, i) => (Math.max(1, n - 2) + i) + ' | ' + l).join('\n') : '';
+      console.error('shader:', log, '\n' + near);
+      throw new Error('shader compile failed');
+    }
+    return s;
+  }
+
+  function program(gl, vs, fs, tfVaryings) {
+    const p = gl.createProgram();
+    gl.attachShader(p, shader(gl, gl.VERTEX_SHADER, vs));
+    gl.attachShader(p, shader(gl, gl.FRAGMENT_SHADER, fs));
+    if (tfVaryings) gl.transformFeedbackVaryings(p, tfVaryings, gl.SEPARATE_ATTRIBS);
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+      console.error('link:', gl.getProgramInfoLog(p));
+      throw new Error('program link failed');
+    }
+    const u = {};
+    const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+    for (let i = 0; i < n; i++) {
+      const info = gl.getActiveUniform(p, i);
+      const name = info.name.replace(/\[0\]$/, '');
+      u[name] = gl.getUniformLocation(p, name);
+    }
+    p.u = u;
+    return p;
+  }
+
+  function buffer(gl, data, usage) {
+    const b = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, data, usage || gl.STATIC_DRAW);
+    return b;
+  }
+
+  /* Resize that only touches the GPU when the SIZE actually changed. Setting
+   * canvas.width at all reallocates the drawing buffer and clears it, so an
+   * unconditional assignment every frame is a full reallocation at 60Hz. */
+  function fit(gl, canvas, budget, onResize) {
+    let w = 0, h = 0, d = 1;
+    return function () {
+      const cw = canvas.clientWidth, ch = canvas.clientHeight;
+      const nd = dpr(canvas, budget);
+      const nw = Math.max(1, Math.round(cw * nd)), nh = Math.max(1, Math.round(ch * nd));
+      if (nw === w && nh === h) return false;
+      w = canvas.width = nw; h = canvas.height = nh; d = nd;
+      gl.viewport(0, 0, w, h);
+      if (onResize) onResize(w, h, d);
+      return true;
+    };
+  }
+
+  /* A pointer with its own asymmetric filter: it catches a new position fast
+   * and drifts back slowly. Symmetric easing reads as a mechanism; asymmetric
+   * reads as attention, and it is the single cheapest thing that makes a
+   * cloud feel like it noticed you. */
+  function pointer(el, opts = {}) {
+    const P = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, down: 0, near: 0, idle: 999 };
+    const cat = opts.catch ?? 0.16, back = opts.back ?? 0.045;
+    el.addEventListener('pointermove', e => {
+      const r = el.getBoundingClientRect();
+      P.tx = ((e.clientX - r.left) / r.width) * 2 - 1;
+      P.ty = 1 - ((e.clientY - r.top) / r.height) * 2;
+      P.idle = 0;
+    }, { passive: true });
+    el.addEventListener('pointerdown', () => { P.down = 1; });
+    addEventListener('pointerup', () => { P.down = 0; });
+    el.addEventListener('pointerleave', () => { P.idle = 999; });
+    P.step = dt => {
+      P.idle += dt;
+      const px = P.x, py = P.y;
+      const k = (Math.abs(P.tx - P.x) + Math.abs(P.ty - P.y)) > 0.004 ? cat : back;
+      P.x += (P.tx - P.x) * (1 - Math.pow(1 - k, dt * 60));
+      P.y += (P.ty - P.y) * (1 - Math.pow(1 - k, dt * 60));
+      P.vx = (P.x - px) / Math.max(dt, 1e-4);
+      P.vy = (P.y - py) / Math.max(dt, 1e-4);
+      P.near += ((P.idle < 2.4 ? 1 : 0) - P.near) * (1 - Math.pow(1 - 0.08, dt * 60));
+    };
+    return P;
+  }
+
+  /* Shared GLSL. `snoise` is Ashima's simplex; `curl` takes its analytic
+   * gradient by finite difference, which is three noise calls per axis and
+   * the reason the particle counts here are what they are. */
+  const NOISE = `
+vec3 mod289(vec3 x){ return x - floor(x*(1.0/289.0))*289.0; }
+vec4 mod289(vec4 x){ return x - floor(x*(1.0/289.0))*289.0; }
+vec4 permute(vec4 x){ return mod289(((x*34.0)+1.0)*x); }
+vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314*r; }
+float snoise(vec3 v){
+  const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+  const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+  vec3 i  = floor(v + dot(v, C.yyy));
+  vec3 x0 = v - i + dot(i, C.xxx);
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + C.xxx;
+  vec3 x2 = x0 - i2 + C.yyy;
+  vec3 x3 = x0 - D.yyy;
+  i = mod289(i);
+  vec4 p = permute(permute(permute(
+             i.z + vec4(0.0, i1.z, i2.z, 1.0))
+           + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+           + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  float n_ = 0.142857142857;
+  vec3 ns = n_ * D.wyz - D.xzx;
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+  vec4 x_ = floor(j * ns.z);
+  vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = x_ * ns.x + ns.yyyy;
+  vec4 y = y_ * ns.x + ns.yyyy;
+  vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0)*2.0 + 1.0;
+  vec4 s1 = floor(b1)*2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+  vec3 p0 = vec3(a0.xy, h.x);
+  vec3 p1 = vec3(a0.zw, h.y);
+  vec3 p2 = vec3(a1.xy, h.z);
+  vec3 p3 = vec3(a1.zw, h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+  p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+  m = m * m;
+  return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+}
+vec3 curl(vec3 p, float e){
+  float n1,n2,a,b,c;
+  n1 = snoise(vec3(p.x, p.y+e, p.z));   n2 = snoise(vec3(p.x, p.y-e, p.z));
+  a = n1 - n2;
+  n1 = snoise(vec3(p.x, p.y, p.z+e));   n2 = snoise(vec3(p.x, p.y, p.z-e));
+  b = n1 - n2;
+  float cx = a - b;
+  n1 = snoise(vec3(p.x, p.y, p.z+e));   n2 = snoise(vec3(p.x, p.y, p.z-e));
+  a = n1 - n2;
+  n1 = snoise(vec3(p.x+e, p.y, p.z));   n2 = snoise(vec3(p.x-e, p.y, p.z));
+  b = n1 - n2;
+  float cy = a - b;
+  n1 = snoise(vec3(p.x+e, p.y, p.z));   n2 = snoise(vec3(p.x-e, p.y, p.z));
+  a = n1 - n2;
+  n1 = snoise(vec3(p.x, p.y+e, p.z));   n2 = snoise(vec3(p.x, p.y-e, p.z));
+  b = n1 - n2;
+  float cz = a - b;
+  return normalize(vec3(cx, cy, cz) + 1e-6);
+}
+float hash11(float p){ p = fract(p*0.1031); p *= p+33.33; p *= p+p; return fract(p); }
+vec3 hash31(float p){
+  vec3 p3 = fract(vec3(p)*vec3(0.1031,0.1030,0.0973));
+  p3 += dot(p3, p3.yxz+33.33);
+  return fract((p3.xxy+p3.yzz)*p3.zyx);
+}`;
+
+  return { ctx, program, buffer, fit, dpr, pointer, NOISE };
+})();
+window.GL = GL;
+
+
+/* ── ORRERY ────────────────────────────────────────────────────────────────
+ * Ninety thousand bodies on real Kepler orbits, solved IN THE VERTEX SHADER.
+ * There is no simulation state and no feedback buffer: position is a pure
+ * function of (elements, time), so scrubbing time backwards is exact, the
+ * system can never drift, and the whole thing costs one draw call.
+ * ------------------------------------------------------------------------ */
+Engine.menu();
+Engine.formStub('.jn-form', '.jn-ok',
+  'Thanks {name} — the secretary writes back within a week, usually on a cloudy night.');
+
+(() => {
+  const cv = document.getElementById('sky');
+  if (!cv) return;
+  const gl = GL.ctx(cv);
+  if (!gl) { cv.style.display = 'none'; return; }
+
+  const MOBILE = innerWidth <= 640, TABLET = innerWidth <= 1024;
+  const N = Engine.REDUCED ? 14000 : MOBILE ? 22000 : TABLET ? 45000 : 90000;
+
+  const VS = `#version 300 es
+precision highp float;
+in vec4 aOrb1;   // a, ecc, inc, node
+in vec4 aOrb2;   // peri, M0, n (mean motion), seed
+uniform mat4 uVP;
+uniform mat3 uRot;
+uniform float uT, uPx;
+out vec3 vC;
+out float vA;
+
+void main(){
+  float a = aOrb1.x, e = aOrb1.y, inc = aOrb1.z, node = aOrb1.w;
+  float peri = aOrb2.x, seed = aOrb2.w;
+  float M = aOrb2.y + aOrb2.z * uT;
+
+  /* Kepler's equation, four Newton steps. Three is visibly wrong at e > 0.4
+   * (the body stutters through periapsis); five buys nothing. The starting
+   * guess matters more than the iteration count, hence the e·sin(M) term. */
+  float E = M + e * sin(M);
+  for (int i = 0; i < 4; i++) {
+    float f = E - e * sin(E) - M;
+    E -= f / max(0.15, 1.0 - e * cos(E));
+  }
+  float cx = a * (cos(E) - e);
+  float cy = a * sqrt(max(0.0, 1.0 - e * e)) * sin(E);
+
+  /* Orbital plane to reference frame: argument of periapsis, then
+   * inclination, then longitude of the ascending node. In that order — any
+   * other and the inclined band tilts about the wrong axis and the whole
+   * system looks like a bowl instead of a disc. */
+  float cw = cos(peri), sw = sin(peri);
+  vec3 q = vec3(cx * cw - cy * sw, cx * sw + cy * cw, 0.0);
+  float ci = cos(inc), si = sin(inc);
+  q = vec3(q.x, q.y * ci - q.z * si, q.y * si + q.z * ci);
+  float cn = cos(node), sn = sin(node);
+  q = vec3(q.x * cn - q.y * sn, q.x * sn + q.y * cn, q.z);
+
+  bool star = seed < 0.0;
+  if (star) q = vec3(0.0);
+
+  vec3 w = uRot * q;
+  vec4 cp = uVP * vec4(w, 1.0);
+  gl_Position = cp;
+
+  float r = length(q);
+  /* Dust is cold and faint, the nine bodies are warm and bright, the primary
+   * is the only thing on screen allowed to be white. */
+  vec3 dust = mix(vec3(0.62, 0.70, 0.92), vec3(0.90, 0.80, 0.62),
+                  fract(abs(seed) * 7.31));
+  vec3 body = vec3(1.0, 0.81, 0.48);
+  float big = step(0.985, fract(abs(seed) * 3.77));
+  vC = star ? vec3(1.0, 0.93, 0.78) : mix(dust, body, big);
+  vA = star ? 1.0 : (0.20 + 0.55 * fract(abs(seed) * 13.7)) * (1.0 + big * 2.2);
+  /* Fade the far side very slightly so the disc reads as having a near edge
+   * and a far one. Without it a face-on ring is a flat annulus. */
+  vA *= 0.62 + 0.38 * smoothstep(-1.6, 1.6, -w.z);
+  gl_PointSize = uPx * (star ? 26.0 : (1.0 + big * 3.4)) * (26.0 / max(2.0, cp.w));
+}`;
+
+  const FS = `#version 300 es
+precision mediump float;
+in vec3 vC; in float vA; out vec4 o;
+void main(){
+  vec2 q = gl_PointCoord * 2.0 - 1.0;
+  float d = dot(q, q);
+  if (d > 1.0) discard;
+  float core = exp(-d * 6.5);
+  float halo = exp(-d * 1.7) * 0.3;
+  o = vec4(vC * (core + halo) * vA, 1.0);
+}`;
+
+  const prog = GL.program(gl, VS, FS);
+
+  /* ── the elements ────────────────────────────────────────────────────── */
+  const o1 = new Float32Array(N * 4), o2 = new Float32Array(N * 4);
+  const rnd = () => Math.random();
+  /* Five bands with gaps between them. A uniform disc reads as a smear; the
+   * gaps are what make it read as a system with a history. */
+  const BANDS = [
+    { a: [0.9, 1.35], e: 0.05, i: 0.030, w: 0.16 },
+    { a: [1.7, 2.35], e: 0.09, i: 0.055, w: 0.24 },
+    { a: [2.9, 3.9],  e: 0.14, i: 0.090, w: 0.30 },
+    { a: [4.6, 5.4],  e: 0.10, i: 0.320, w: 0.14 },
+    { a: [6.3, 8.6],  e: 0.26, i: 0.240, w: 0.16 },
+  ];
+  const cum = [];
+  let acc = 0;
+  for (const b of BANDS) { acc += b.w; cum.push(acc); }
+  for (let i = 0; i < N; i++) {
+    const u = rnd() * acc;
+    let k = 0; while (k < cum.length - 1 && u > cum[k]) k++;
+    const b = BANDS[k];
+    const a = b.a[0] + rnd() * (b.a[1] - b.a[0]);
+    const e = Math.abs(rnd() + rnd() - 1) * b.e;
+    /* Inclination as the sum of two uniforms — a real belt is bunched to the
+     * plane with thin wings, which a flat random is not. */
+    const inc = (rnd() + rnd() - 1) * b.i;
+    o1[i * 4] = a; o1[i * 4 + 1] = e; o1[i * 4 + 2] = inc;
+    o1[i * 4 + 3] = rnd() * Math.PI * 2;
+    o2[i * 4] = rnd() * Math.PI * 2;
+    o2[i * 4 + 1] = rnd() * Math.PI * 2;
+    /* Kepler's third law. Getting this wrong — a constant rate, say — is the
+     * single most obvious tell in an orbital scene: the outer band sweeps
+     * round with the inner one and nothing reads as gravity. */
+    o2[i * 4 + 2] = 0.42 / Math.pow(a, 1.5);
+    o2[i * 4 + 3] = rnd() * 997;
+  }
+  o2[3] = -1;             // index 0 is the primary
+
+  const b1 = GL.buffer(gl, o1), b2 = GL.buffer(gl, o2);
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  const l1 = gl.getAttribLocation(prog, 'aOrb1'), l2 = gl.getAttribLocation(prog, 'aOrb2');
+  gl.bindBuffer(gl.ARRAY_BUFFER, b1);
+  gl.enableVertexAttribArray(l1); gl.vertexAttribPointer(l1, 4, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, b2);
+  gl.enableVertexAttribArray(l2); gl.vertexAttribPointer(l2, 4, gl.FLOAT, false, 0, 0);
+  gl.bindVertexArray(null);
+
+  /* ── camera ──────────────────────────────────────────────────────────── */
+  const M4 = new Float32Array(16), V4 = new Float32Array(16), VP = new Float32Array(16);
+  const R3 = new Float32Array(9);
+  function persp(out, fovy, aspect, near, far) {
+    const f = 1 / Math.tan(fovy / 2), nf = 1 / (near - far);
+    out.fill(0); out[0] = f / aspect; out[5] = f;
+    out[10] = (far + near) * nf; out[11] = -1; out[14] = 2 * far * near * nf;
+    return out;
+  }
+  function mul(out, a, b) {
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+      let s = 0; for (let k = 0; k < 4; k++) s += a[k * 4 + j] * b[i * 4 + k];
+      out[i * 4 + j] = s;
+    } return out;
+  }
+  function rot3(out, yaw, pitch) {
+    const cy = Math.cos(yaw), sy = Math.sin(yaw);
+    const cp = Math.cos(pitch), sp = Math.sin(pitch);
+    /* Yaw about Z (the system's own pole), then pitch about X. Column-major. */
+    out[0] = cy;        out[1] = sy * cp;   out[2] = sy * sp;
+    out[3] = -sy;       out[4] = cy * cp;   out[5] = cy * sp;
+    out[6] = 0;         out[7] = -sp;       out[8] = cp;
+    return out;
+  }
+
+  let yaw = 0.4, pitch = 1.06, yawV = 0, pitchV = 0, down = false, px = 0, py = 0;
+  cv.addEventListener('pointerdown', e => { down = true; px = e.clientX; py = e.clientY;
+    cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', e => {
+    if (!down) return;
+    yawV += (e.clientX - px) * 0.00042;
+    pitchV += (e.clientY - py) * 0.00042;
+    px = e.clientX; py = e.clientY;
+  });
+  const up = () => { down = false; };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+
+  let W = 1, H = 1, DPR = 1;
+  const resize = GL.fit(gl, cv, 2_600_000, (w, h, d) => { W = w; H = h; DPR = d; });
+  resize(); addEventListener('resize', resize);
+
+  gl.clearColor(0.020, 0.024, 0.043, 1);
+  gl.disable(gl.DEPTH_TEST);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+
+  let t = 0, dist = 15.4, first = false;
+  Engine.hold();
+
+  Engine.add(dt => {
+    if (dt > 0.06) dt = 0.06;
+    const sp = Engine.clamp01(scrollY /
+      Math.max(1, document.documentElement.scrollHeight - innerHeight));
+    /* Scrolling runs the clock FASTER rather than moving a camera down a
+     * page: the subject is time, and the reader going further down the
+     * almanac is the reader looking further ahead. */
+    t += dt * (0.85 + sp * 5.5);
+
+    yaw += yawV + dt * 0.014;
+    pitch = Engine.clamp(pitch + pitchV, 0.16, Math.PI - 0.16);
+    yawV *= Math.pow(0.0016, dt);
+    pitchV *= Math.pow(0.0016, dt);
+    if (!down) pitch = Engine.damp(pitch, 1.06 - sp * 0.55, 0.018, dt);
+    dist = Engine.damp(dist, 15.4 - sp * 3.4, 0.05, dt);
+
+    persp(M4, 0.72, W / H, 0.1, 200);
+    V4.set([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,-dist,1]);
+    mul(VP, M4, V4);
+    rot3(R3, yaw, pitch);
+
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(prog);
+    gl.uniformMatrix4fv(prog.u.uVP, false, VP);
+    gl.uniformMatrix3fv(prog.u.uRot, false, R3);
+    gl.uniform1f(prog.u.uT, t);
+    gl.uniform1f(prog.u.uPx, 0.62 * DPR);
+    gl.bindVertexArray(vao);
+    gl.drawArrays(gl.POINTS, 0, N);
+    gl.bindVertexArray(null);
+
+    if (!first) { first = true; Engine.release(); }
+  });
+
+  /* ── the ephemeris ───────────────────────────────────────────────────────
+   * Sidereal time and the moon phase are computed from the visitor's own
+   * clock, not faked. An observatory page whose ephemeris is a static string
+   * is the one thing the audience for this site would notice first. */
+  Engine.onReady(() => {
+    const n = document.getElementById('ep-n'), tt = document.getElementById('ep-t');
+    const s = document.getElementById('ep-s'), m = document.getElementById('ep-m');
+    if (n) n.textContent = N.toLocaleString();
+    const PH = ['New', 'Waxing crescent', 'First quarter', 'Waxing gibbous',
+                'Full', 'Waning gibbous', 'Last quarter', 'Waning crescent'];
+    let acc2 = 0;
+    Engine.add(dt => {
+      acc2 += dt;
+      const now = new Date();
+      /* Greenwich mean sidereal time, good to a few seconds — enough for a
+       * readout and honest about what it is. */
+      const jd = now.getTime() / 86400000 + 2440587.5;
+      const T = (jd - 2451545.0) / 36525;
+      let gmst = 280.46061837 + 360.98564736629 * (jd - 2451545.0)
+               + 0.000387933 * T * T;
+      gmst = ((gmst % 360) + 360) % 360;
+      const hrs = gmst / 15;
+      const hh = Math.floor(hrs), mm = Math.floor((hrs - hh) * 60),
+            ss = Math.floor((((hrs - hh) * 60) - mm) * 60);
+      const p2 = v => String(v).padStart(2, '0');
+      if (tt) tt.textContent = p2(hh) + ':' + p2(mm) + ':' + p2(ss);
+      if (m) {
+        const syn = 29.530588853;
+        const age = (((jd - 2451550.1) % syn) + syn) % syn;
+        m.textContent = PH[Math.round(age / syn * 8) % 8] + ' · '
+          + Math.round(age) + 'd';
+      }
+      if (s && acc2 > 3) {
+        acc2 = 0;
+        const see = 1.4 + Math.sin(Date.now() / 91000) * 0.5 + Math.random() * 0.2;
+        s.textContent = see.toFixed(1) + '″';
+      }
+    });
+  });
+})();
+
+Engine.boot();
+
+</script>
+</body>
+</html>
